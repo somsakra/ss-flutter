@@ -2,7 +2,18 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:my_first_app/src/config/theme.dart' as custom_theme;
+import 'package:my_first_app/src/config/route.dart' as custom_route;
+import 'package:my_first_app/src/constants/setting.dart';
+import 'package:my_first_app/src/pages/home/home_page.dart';
 import 'package:my_first_app/src/utils/RegexValidator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class ScreenArguments {
+  final String name;
+  final int age;
+
+  ScreenArguments(this.name, this.age);
+}
 
 class LoginForm extends StatefulWidget {
   const LoginForm({Key? key}) : super(key: key);
@@ -58,15 +69,25 @@ class _LoginFormState extends State<LoginForm> {
             }
             if (_errorUsername == null && _errorPassword == null) {
               showLoading().show(context);
-              Future.delayed(const Duration(seconds: 2)).then((value)  {
+              Future.delayed(const Duration(seconds: 1)).then((value) async {
                 Navigator.pop(context);
                 if (username == "somsakra@live.com" && password == "12345678") {
-                print('login success');
+                  // Navigator.pushReplacement(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //         builder: (context) => const HomePage(name: 'xxx', age: 20)));
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.setString(Setting.TOKEN_PREF, 'asdfweadsfeasdfesdfesde');
+                  prefs.setString(Setting.USERNAME_PREF, username);
+
+                  Navigator.pushReplacementNamed(
+                      context, custom_route.Route.home);
                 } else {
-                showAlertBar().show(context);
+                  showAlertBar().show(context);
+                  setState(() {});
                 }
               });
-
             } else {
               setState(() {});
             }
