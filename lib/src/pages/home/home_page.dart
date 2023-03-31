@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:my_first_app/src/constants/asset.dart';
+import 'package:my_first_app/src/pages/home/widgets/chart.dart';
+import 'package:my_first_app/src/pages/home/widgets/custom_drawer.dart';
+import 'package:my_first_app/src/pages/home/widgets/custom_tab_bar.dart';
+import 'package:my_first_app/src/pages/home/widgets/report.dart';
+import 'package:my_first_app/src/pages/home/widgets/stock.dart';
+import 'package:my_first_app/src/view-models/tab_menu_view_model.dart';
 
 class ScreenArguments {
   final String name;
@@ -16,13 +22,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final _tabsMenu = TabMenuViewModel().items;
 
   @override
   Widget build(BuildContext context) {
@@ -31,24 +31,24 @@ class _HomePageState extends State<HomePage> {
     // var name = models['name'];
     // var age = models['age'];
 
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TextButton(
-              onPressed: () {
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Back')),
-          // Text(name.toString()),
-          // Text(age.toString()),
-          Image.asset(Asset.LOGO_IMAGE),
-          Image.network(
-              'https://images.dog.ceo/breeds/hound-english/n02089973_2017.jpg')
-        ],
-      ),
+    return DefaultTabController(
+      length: _tabsMenu.length,
+      child: Scaffold(
+          appBar: _buildAppBar(),
+          drawer: const CustomDrawer(),
+          body: TabBarView(
+              children: _tabsMenu.map((item) => item.widget).toList())),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      title: const Text("Marker"),
+      bottom: CustomTabBar(_tabsMenu),
+      actions: [
+        IconButton(onPressed: () {}, icon: const Icon(Icons.bookmark_border)),
+        IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code)),
+      ],
     );
   }
 }
