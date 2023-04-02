@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:my_first_app/src/constants/api.dart';
 import 'package:my_first_app/src/utils/format.dart';
 import 'package:my_first_app/src/widgets/image_not_found.dart';
+import 'package:my_first_app/src/models/product.dart';
+
+
 
 class ProductItem extends StatelessWidget {
   final double maxHeight;
 
-  const ProductItem(this.maxHeight, {Key? key}) : super(key: key);
+  final Product product;
+
+  const ProductItem(this.maxHeight, {Key? key, required this.product}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,18 +30,17 @@ class ProductItem extends StatelessWidget {
 
   Stack _buildImage() {
     final height = maxHeight * 0.7;
-    const productImage =
-        'https://png.pngtree.com/png-clipart/20190924/original/pngtree-human-avatar-free-vector-png-image_4825373.jpg';
-    const stock = 1;
+    final productImage = product.image;
+
     return Stack(children: [
       SizedBox(
         width: double.infinity,
         height: height,
         child: productImage.isNotEmpty
-            ? Image.network(productImage)
+            ? Image.network('${API.IMAGE_URL}/$productImage')
             : const ImageNotFound(),
       ),
-      if (stock <= 0) _buildOutOfStock()
+      if (product.stock <= 0) _buildOutOfStock()
     ]);
   }
 
@@ -47,8 +52,8 @@ class ProductItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Neque porro quisquam',
+             Text(
+              product.name,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -56,12 +61,12 @@ class ProductItem extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '฿${formatCurrency.format(1111)}',
+                  '฿${formatCurrency.format(product.price)}',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.blue),
                 ),
                 Text(
-                  '${formatNumber.format(1234)} pieces',
+                  '${formatNumber.format(product.stock)} pieces',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.deepOrange),
                 )
