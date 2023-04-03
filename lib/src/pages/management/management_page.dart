@@ -1,6 +1,11 @@
+import 'dart:io';
+
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:my_first_app/src/models/product.dart';
 import 'package:my_first_app/src/pages/management/widgets/product_image.dart';
+import 'package:my_first_app/src/services/network_service.dart';
 
 class ManagementPage extends StatefulWidget {
   const ManagementPage({Key? key}) : super(key: key);
@@ -14,12 +19,20 @@ class _ManagementPageState extends State<ManagementPage> {
   late bool _isEdit;
   late final Product _product;
   final GlobalKey<FormState> _form = GlobalKey();
+  File? _imageFile;
 
   @override
   void initState() {
     // TODO: implement initState
     _isEdit = false;
-    _product = Product(id: 0, name: "", image: "image", stock: 0, price: 0, createdAt: DateTime.now(), updatedAt: DateTime.now());
+    _product = Product(
+        id: 0,
+        name: "",
+        image: "image",
+        stock: 0,
+        price: 0,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now());
     super.initState();
   }
 
@@ -46,12 +59,16 @@ class _ManagementPageState extends State<ManagementPage> {
                   Flexible(child: _buildStockInput()),
                 ],
               ),
-              const ProductImage(),
+              ProductImage(callBack),
             ],
           ),
         ),
       ),
     );
+  }
+
+  callBack(File imageFile) {
+    _imageFile = imageFile;
   }
 
   AppBar _buildAppBar() {
@@ -61,9 +78,7 @@ class _ManagementPageState extends State<ManagementPage> {
         TextButton(
           onPressed: () {
             _form.currentState?.save();
-            print(_product.name);
-            print(_product.price.toString());
-            print(_product.stock.toString());
+            addProduct();
           },
           child: const Text(
             'submit',
@@ -105,4 +120,33 @@ class _ManagementPageState extends State<ManagementPage> {
           _product?.stock = value!.isEmpty ? 0 : int.parse(value);
         },
       );
+
+  void addProduct() {
+    NetworkService().addProduct(_product, imageFile: _imageFile).then((result) {
+      Navigator.pop(context);
+      showAlertBar(result);
+    }).catchError((error) {
+      showAlertBar(
+        error.toString(),
+        icon: FontAwesomeIcons.circleXmark,
+        color: Colors.red,
+      );
+    });
+  }
+
+  void showAlertBar(String message,
+      {IconData icon = FontAwesomeIcons.circleCheck,
+      Color color = Colors.green}) {
+    Flushbar(
+      message: message,
+      icon: FaIcon(
+        icon,
+        size: 28.0,
+        color: color,
+      ),
+      flushbarPosition: FlushbarPosition.TOP,
+      duration: const Duration(seconds: 3),
+      flushbarStyle: FlushbarStyle.GROUNDED,
+    ).show(context);
+  }
 }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -7,7 +8,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_first_app/src/constants/asset.dart';
 
 class ProductImage extends StatefulWidget {
-  const ProductImage({Key? key}) : super(key: key);
+  final Function(File imageFile) callBack;
+
+  const ProductImage(this.callBack, {Key? key}) : super(key: key);
 
   @override
   State<ProductImage> createState() => _ProductImageState();
@@ -139,11 +142,13 @@ class _ProductImageState extends State<ProductImage> {
         ),
       ],
     ).then((file) => {
-      if(file != null){
-        setState(()=>{
-          _imageFile = File(file.path)
-        })
-      }
-    });
+          if (file != null)
+            {
+              setState(() =>
+                  {_imageFile = File(file.path), widget.callBack(_imageFile!)})
+            }
+        });
   }
+
+
 }
