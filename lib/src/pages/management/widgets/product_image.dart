@@ -9,8 +9,13 @@ import 'package:my_first_app/src/constants/asset.dart';
 
 class ProductImage extends StatefulWidget {
   final Function(File imageFile) callBack;
+  final String imageURL;
 
-  const ProductImage(this.callBack, {Key? key}) : super(key: key);
+  const ProductImage(
+    this.callBack,
+    this.imageURL, {
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<ProductImage> createState() => _ProductImageState();
@@ -19,6 +24,20 @@ class ProductImage extends StatefulWidget {
 class _ProductImageState extends State<ProductImage> {
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
+  String? _imageUrl;
+
+  @override
+  void initState() {
+    _imageUrl = widget.imageURL;
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _imageFile?.delete();
+    // TODO: implement dispose
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +52,7 @@ class _ProductImageState extends State<ProductImage> {
 
   OutlinedButton _buildPickerImage() => (OutlinedButton.icon(
         onPressed: () {
-          _modelPickerImage();
+          _modalPickerImage();
         },
         icon: const FaIcon(
           FontAwesomeIcons.image,
@@ -46,7 +65,7 @@ class _ProductImageState extends State<ProductImage> {
       ));
 
   dynamic _buildPreviewImage() {
-    if (_imageFile == null) {
+    if (_imageUrl == null && _imageFile == null) {
       return const SizedBox();
     }
     container(Widget child) => Container(
@@ -56,9 +75,14 @@ class _ProductImageState extends State<ProductImage> {
           height: 350,
           child: child,
         );
-    return Stack(
-      children: [container(Image.file(_imageFile!)), _buildDeleteImageButton()],
-    );
+    return _imageUrl != null
+        ? container(Image.network(_imageUrl!))
+        : Stack(
+            children: [
+              container(Image.file(_imageFile!)),
+              _buildDeleteImageButton()
+            ],
+          );
   }
 
   _buildDeleteImageButton() {
@@ -67,6 +91,7 @@ class _ProductImageState extends State<ProductImage> {
       onPressed: () {
         setState(() {
           _imageFile = null;
+          widget.callBack(_imageFile!);
         });
       },
       icon: const Icon(
@@ -78,7 +103,7 @@ class _ProductImageState extends State<ProductImage> {
     ));
   }
 
-  void _modelPickerImage() {
+  void _modalPickerImage() {
     buildListTile(IconData icon, String title, ImageSource imageSource) =>
         ListTile(
           leading: Icon(icon),
@@ -90,15 +115,17 @@ class _ProductImageState extends State<ProductImage> {
         );
     showModalBottomSheet(
         context: context,
-        builder: (context) => Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                buildListTile(Icons.photo_camera, 'Take a picture from camera',
-                    ImageSource.camera),
-                buildListTile(Icons.photo_library, 'Select photo from library',
-                    ImageSource.gallery)
-              ],
-            ));
+        builder: (context) => SafeArea(
+          child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  buildListTile(Icons.photo_camera, 'Take a picture from camera',
+                      ImageSource.camera),
+                  buildListTile(Icons.photo_library, 'Select photo from library',
+                      ImageSource.gallery)
+                ],
+              ),
+        ));
   }
 
   void _pickImage(ImageSource imageSource) {
@@ -144,11 +171,12 @@ class _ProductImageState extends State<ProductImage> {
     ).then((file) => {
           if (file != null)
             {
-              setState(() =>
-                  {_imageFile = File(file.path), widget.callBack(_imageFile!)})
+              setState(() => {
+                    _imageFile = File(file.path),
+                    widget.callBack(_imageFile!),
+                    _imageUrl = null
+                  })
             }
         });
   }
-
-
 }

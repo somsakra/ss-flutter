@@ -42,6 +42,32 @@ class NetworkService {
     throw Exception('Network Fail');
   }
 
+  Future<String> editProduct(Product product, {File? imageFile}) async {
+    final url = '${API.BASE_URL}${API.PRODUCT}/${product.id}';
+    FormData data = FormData.fromMap({
+      'name': product.name,
+      'price': product.price,
+      'stock': product.stock,
+      if (imageFile != null)
+        'photo': await MultipartFile.fromFile(imageFile.path,
+            contentType: MediaType('image', 'jpg'))
+    });
+    final Response response = await _dio.put(url, data: data);
+    if (response.statusCode == 200) {
+      return 'Edit Successfully';
+    }
+    throw Exception('Network Fail');
+  }
+
+  Future<String> deleteProduct(int productId) async {
+    final url = '${API.BASE_URL}${API.PRODUCT}/$productId';
+    final Response response = await _dio.delete(url);
+    if (response.statusCode == 204) {
+      return 'Delete Successfully';
+    }
+    throw Exception('Network Fail');
+  }
+
   Future<List<Post>> fetchPost(int startIndex, {int limit = 5}) async {
     final url =
         'https://jsonplaceholder.typicode.com/posts?_start=$startIndex&_limit=$limit';

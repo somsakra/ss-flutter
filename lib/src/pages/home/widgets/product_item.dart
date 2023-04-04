@@ -3,6 +3,7 @@ import 'package:my_first_app/src/constants/api.dart';
 import 'package:my_first_app/src/utils/format.dart';
 import 'package:my_first_app/src/widgets/image_not_found.dart';
 import 'package:my_first_app/src/models/product.dart';
+import 'package:my_first_app/src/config/route.dart' as custom_route;
 
 
 
@@ -11,14 +12,14 @@ class ProductItem extends StatelessWidget {
 
   final Product product;
 
-  const ProductItem(this.maxHeight, {Key? key, required this.product}) : super(key: key);
+  final VoidCallback? onTap;
+
+  const ProductItem(this.maxHeight, {Key? key, required this.product, this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        print("press");
-      },
+      onTap:  onTap,
       child: Container(
         color: Colors.white,
         child: Column(

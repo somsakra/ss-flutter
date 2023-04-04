@@ -64,7 +64,7 @@ class _StockState extends State<Stock> {
     );
   }
 
-  GridView _buildProductGridView(List<Product> product) {
+  GridView _buildProductGridView(List<Product> products) {
     return GridView.builder(
       padding: EdgeInsets.only(
           left: _spacing, right: _spacing, top: _spacing, bottom: 150),
@@ -76,9 +76,20 @@ class _StockState extends State<Stock> {
       ),
       itemBuilder: (context, index) =>
           LayoutBuilder(builder: (context, BoxConstraints constraints) {
-        return ProductItem(constraints.maxHeight, product: product[index]);
+        final product = products[index];
+        return ProductItem(
+          constraints.maxHeight,
+          product: products[index],
+          onTap: () {
+            Navigator.pushNamed(context, custom_route.Route.management,
+                    arguments: product)
+                .then((value) {
+              setState(() {});
+            });
+          },
+        );
       }),
-      itemCount: product.length,
+      itemCount: products.length,
     );
   }
 }

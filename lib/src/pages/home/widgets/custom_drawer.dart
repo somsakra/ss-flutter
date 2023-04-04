@@ -22,16 +22,18 @@ class _CustomDrawerState extends State<CustomDrawer> {
           _buildProfile(),
           ..._buildMainMenu(), //spread operator
           const Spacer(),
-          ListTile(
-            leading: const FaIcon(
-              FontAwesomeIcons.rightFromBracket,
-              color: Colors.grey,
+          SafeArea(
+            child: ListTile(
+              leading: const FaIcon(
+                FontAwesomeIcons.rightFromBracket,
+                color: Colors.grey,
+              ),
+              title: const Text(
+                'Logout',
+                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
+              ),
+              onTap: showDialogLogout,
             ),
-            title: const Text(
-              'Logout',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.0),
-            ),
-            onTap: showDialogLogout,
           ),
         ],
       ),
