@@ -1,6 +1,4 @@
-
-import 'package:flutter/cupertino.dart';
-import 'package:my_first_app/src/pages/management/management_page.dart';
+import 'package:flutter/material.dart';
 import 'package:my_first_app/src/pages/pages.dart';
 
 class Route {
@@ -17,5 +15,4 @@ class Route {
     dashboard: (context) => const DashboardPage(),
     management: (context) => const ManagementPage()
   };
-
 }
